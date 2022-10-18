@@ -1,0 +1,33 @@
+name: Node CI
+on:
+  push:
+    branches:
+      - umpacken-publishing
+
+jobs:
+  publishing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - run: git remote set-url origin https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY
+      - run: git config --global user.email "ekruglov@gmail.com"
+      - run: git config --global user.name "Github Actions"
+      - run: node ./.github/change-package.js
+      - run: npm i
+      - run: npm test
+      - run: npm audit
+      - run: npm --no-save install release-it@15 @release-it/bumper@4 @release-it/conventional-changelog@5
+      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > .npmrc
+      - run: echo -e "\n.github\n.release-it.json\n.idea\n.npmrc\n" >> .npmignore
+      - run: cp .github/.release-it.json ./
+      - run: test -f README.md && cat README.md >> ./.github/README.pre && cat ./.github/README.pre > README.md
+      - run: ./node_modules/.bin/release-it --ci
+        env:
+          CI: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

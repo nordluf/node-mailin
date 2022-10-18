@@ -1,0 +1,22 @@
+{
+  "git": {
+    "requireCleanWorkingDir": false,
+    "commit": false,
+    "tag": true,
+    "tagName": "v${version}"
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": "angular"
+    },
+    "@release-it/bumper": {
+      "in": {
+        "file": "./.github/VERSION",
+        "type": "text/plain"
+      }
+    }
+  },
+  "hooks": {
+    "before:init": "git tag --list 'v*' | sort -V | tail -1 > ./.github/VERSION"
+  }
+}
