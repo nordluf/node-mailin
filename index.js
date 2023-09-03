@@ -3,7 +3,7 @@ const semver = require("semver");
 const pkg = require("./package.json");
 
 /* Check compatibility with versions of node. */
-if (!semver.satisfies(process.version, ">=8.0.0")) {
+if (!semver.satisfies(process.version, ">=13.4.0")) {
   console.log(
     "\n*****\nYour current node version (" +
       process.version +
